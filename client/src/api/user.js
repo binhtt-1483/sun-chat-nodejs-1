@@ -7,4 +7,3 @@ export function getUser() {
 export function updateUser(param) {
   return new Http().authenticated().post('/update/user', param)
 }
-

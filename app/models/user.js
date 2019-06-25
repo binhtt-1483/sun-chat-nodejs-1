@@ -315,7 +315,14 @@ UserSchema.statics = {
   },
 
   updateInfo: function(options) {
-    return this.updateOne({ _id: mongoose.Types.ObjectId(options.criteria._id) }, { $set: options.data });
+    return this.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(options.criteria._id) },
+      { $set: options.data },
+      {
+        fields: { 'avatar': 1, 'email': 1, 'name': 1 },
+        new: true
+      }
+    );
   },
 
   acceptRequest: async function(userId, requestUserIds) {

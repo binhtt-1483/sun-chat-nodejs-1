@@ -41,7 +41,7 @@ class CreateRoom extends PureComponent {
       <React.Fragment>
         <Popover content={content}>
           <Badge className="header-icon" type="primary">
-            <a>
+            <a href="javascript:;">
               <Icon type="plus-circle" />
             </a>
           </Badge>

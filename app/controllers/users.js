@@ -79,10 +79,10 @@ exports.show = async(function*(req, res) {
 
 exports.update = async(function*(req, res) {
   const { _id } = req.decoded;
+  const io = req.app.get('socketIO');
   const criteria = { _id: _id };
   const error = validationResult(req);
   const pathUserAvatar = config.DIR_UPLOAD_FILE.USER_AVATAR;
-  const io = req.app.get('socketIO');
 
   if (error.array().length) {
     const errors = customMessageValidate(error);
@@ -140,6 +140,7 @@ exports.update = async(function*(req, res) {
     const roomMychatId = yield Room.getRoomMyChatId(_id);
 
     io.to(_id).emit('update_user_avatar', { room_mychat_id: roomMychatId[0]._id, avatar: data_changed.data.avatar });
+    io.emit('update_user_info', { user });
 
     return res.status(200).json({ success: true, msg: __('update_to_success_user') });
   } catch (e) {

@@ -60,8 +60,6 @@ const initialAttribute = {
 
   savedLastMsgId: null,
   scrollTop: 0,
-
-  userInfoUpdateData: {},
 };
 
 class ChatBox extends React.Component {
@@ -129,31 +127,9 @@ class ChatBox extends React.Component {
       this.getDirectRoom(userId);
     });
 
-    //Listen 'update_member_info' event from server
-    this.socket.on('update_member_info', res => {
-      let { messages } = this.state;
-      this.attr.userInfoUpdateData[res._id] = res;
-      this.updateMessagesByUser(messages, res);
-
-      this.forceUpdate();
-    });
-
     if (!localStorage.getItem('descW')) {
       saveSizeComponentsChat();
     }
-  }
-
-  updateMessagesByUser(messages, user) {
-    if (messages.length > 0) {
-      messages.forEach((message, index) => {
-        if (message.user === user._id) {
-          messages[index].user = user._id;
-          messages[index].user_info = user;
-        }
-      });
-    }
-
-    return messages;
   }
 
   componentDidUpdate(prevProps) {
@@ -451,8 +427,9 @@ class ChatBox extends React.Component {
   };
 
   createMarkupMessage = message => {
+    const { roomId } = this.props;
     const members = this.props.allMembers;
-    let messageContentHtml = handlersMessage.renderMessage(message, members);
+    let messageContentHtml = handlersMessage.renderMessage(message, members, roomId);
 
     return { __html: messageContentHtml };
   };
@@ -785,7 +762,7 @@ class ChatBox extends React.Component {
           )}
           <div>
             {messages.map(message => {
-              let messageHtml = this.createMarkupMessage(message, this.attr.userInfoUpdateData);
+              let messageHtml = this.createMarkupMessage(message);
               let notificationClass = message.is_notification ? 'pre-notification' : '';
               let isToMe =
                 messageHtml.__html.includes(`data-tag="[To:${currentUserInfo._id}]"`) ||
